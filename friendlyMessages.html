@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>send me a message</title>
+</head>
+<style>
+h1{
+    font-family: 'Courier New', Courier, monospace;
+    font-size:5vmax;
+}
+.info-field{
+    border:1px solid black;
+    margin-top:1vmax;
+    font-family: 'Courier New', Courier, monospace;
+    font-size:2vmax;
+    width:fit-content;
+    height:10vh;
+    display:block;
+}
+.submit-button{
+    font-family:'Courier New', Courier, monospace;
+    font-size:4vmax;
+    background-color: aquamarine;
+    font-weight: bolder;
+}
+.submit-button:active{
+    scale:0.8;
+}
+@media screen and (max-width:468px){
+    .info-field{
+        margin-top:1vmax;
+        margin-left:10%;
+        font-family: 'Courier New', Courier, monospace;
+        font-size:5vmax;
+        width:80vw;
+        height:10vh;
+        display:block;
+    }
+    .submit-button{
+        font-family:'Courier New', Courier, monospace;
+        font-size:10vmax;
+        background-color: aquamarine;
+        font-weight: bolder;
+        cursor:pointer;
+        margin-left:35%;
+    }
+    h1{
+        font-family: 'Courier New', Courier, monospace;
+        font-size:5vmax;
+        margin-bottom:30%;
+    }
+}
+</style>
+<body>
+  <h1>Bạn có lời nhắn nhủ gì đến với Minh Duy?</h1>  
+  <form onsubmit="submitForm(event)">
+    <input placeholder="Tên/nickname..." name="name" type="text" class="info-field">
+    <input placeholder="Lời nhắn gửi..." name="message" type="text" class="info-field">
+    <input type="submit" value="Gửi" class="submit-button">
+  </form>
+</body>
+<script>
+    let text = 'Bạn có lời nhắn nhủ gì đến với Minh Duy?';
+    let h1 = document.querySelector('h1');
+
+    function submitForm(e) {
+        const formEle = document.querySelector('form');
+        e.preventDefault();
+        typewriter('Lời nhắn nhủ của bạn đã được ghi nhận!');
+        const formData = new FormData(formEle);
+        fetch('https://script.google.com/macros/s/AKfycbyMORYyqEevb_fN_G4wToVhcEbuVYUUp4xUs3wl7w_xXlAxp3mZmiiyDi8gCfzVXHpB8Q/exec', {
+            method: "POST",
+            body: formData
+        });
+    }
+
+    function typewriter(text, speed = 50) {
+        let current_text = '';
+        let j = 0;
+        let typing_animation = setInterval(() => {
+            current_text += text[j];
+            h1.textContent = current_text + '▮';
+            j++;
+            if (j >= text.length) {
+                clearInterval(typing_animation);
+            }
+        }, speed);
+    }
+
+    typewriter(text);
+</script>
+</html>
