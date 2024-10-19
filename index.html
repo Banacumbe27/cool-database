@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>send me a message</title>
+    <title>Lời nhắn gửi.</title>
 </head>
 <style>
 h1{
@@ -54,40 +54,40 @@ h1{
 }
 </style>
 <body>
-  <h1>Bạn có lời nhắn nhủ gì đến với Minh Duy?</h1>  
-  <form action="
-  https://script.google.com/macros/s/AKfycbzxSBABLtB7UkDrMSoz923AHg4l9lXXEtuuWX7asr7OcFVgejn4ubRUqhO7d5QaMFIg/exec
-  " method="post" autocomplete='off'>
-    <input placeholder="Tên/nickname..." name="Name" type="text" class="info-field">
-    <input placeholder="Lời nhắn gửi..." name="Message" type="text" class="info-field">
+  <h1></h1>  
+  <form onsubmit="submitForm(event)" autocomplete="off">
+    <input placeholder="Tên/nickname..." name="Name" type="text" class="info-field" required>
+    <input placeholder="Lời nhắn gửi..." name="Message" type="text" class="info-field" required>
     <input type="submit" value="Gửi" class="submit-button">
   </form>
 </body>
 <script>
-    let text = 'Bạn có lời nhắn nhủ gì đến với Minh Duy?';
-    let h1 = document.querySelector('h1');
-
+    let submitted=false;
     function submitForm(e) {
-        const formEle = document.querySelector('form');
-        e.preventDefault();
+        e.preventDefault(); 
+        if(!submitted){
+        const formData = new FormData(e.target);
         typewriter('Đang gửi...');
-        const formData = new FormData(formEle);
-        fetch('https://script.google.com/macros/s/AKfycbx9RjSe9zmRAP_Rbe4Ue98zqsUtfG-IaLBFJg7cksbRzDFM-aAYu7CIF-HuNQlbepKv/exec', {
-            method: "POST",
+        fetch('https://script.google.com/macros/s/AKfycbyieWjlUm_q3kgUIgeDwDN7HzMYJqC1Ubm0pgKOrbni41WGqaNfeJZ4OdLmz6AvPZo/exec', {
+            method: 'POST',
             body: formData,
-            mode: 'no-cors'
+            mode:'no-cors'
         })
-        .then(() => {
-            console.log("Message sent successfully!");
+        .then(response => response.text())
+        .then(data => {
+            console.log("Form submitted successfully", data);
+            localStorage.setItem('formSubmitted', 'true');
             typewriter('Lời nhắn nhủ của bạn đã được ghi nhận!');
-
         })
-        .catch((error) => {
-            console.error("Error:", error);
+        .catch(error => {
+            console.error("Oh no! Đã có lỗi xảy ra, bạn vui lòng thử lại. Xin lỗi :(", error);
         });
+        submitted=true;
     }
-    
-
+    }
+    let h1=document.querySelector('h1');
+    let text='Bạn có lời nhắn nhủ gì đến với mình (Duy Nguyễn)? ver 2.0beta'
+    typewriter(text);
     function typewriter(text, speed = 25) {
         let current_text = '';
         let j = 0;
@@ -97,10 +97,10 @@ h1{
             j++;
             if (j >= text.length) {
                 clearInterval(typing_animation);
+                h1.textContent = current_text; // Remove the cursor after finishing
             }
         }, speed);
     }
-
-    typewriter(text);
+    
 </script>
 </html>
