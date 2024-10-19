@@ -55,9 +55,11 @@ h1{
 </style>
 <body>
   <h1>Bạn có lời nhắn nhủ gì đến với Minh Duy?</h1>  
-  <form onsubmit="submitForm(event)">
-    <input placeholder="Tên/nickname..." name="name" type="text" class="info-field">
-    <input placeholder="Lời nhắn gửi..." name="message" type="text" class="info-field">
+  <form action="
+  https://script.google.com/macros/s/AKfycbzxSBABLtB7UkDrMSoz923AHg4l9lXXEtuuWX7asr7OcFVgejn4ubRUqhO7d5QaMFIg/exec
+  " method="post">
+    <input placeholder="Tên/nickname..." name="Name" type="text" class="info-field">
+    <input placeholder="Lời nhắn gửi..." name="Message" type="text" class="info-field">
     <input type="submit" value="Gửi" class="submit-button">
   </form>
 </body>
@@ -68,15 +70,25 @@ h1{
     function submitForm(e) {
         const formEle = document.querySelector('form');
         e.preventDefault();
-        typewriter('Lời nhắn nhủ của bạn đã được ghi nhận!');
+        typewriter('Đang gửi...');
         const formData = new FormData(formEle);
-        fetch('https://script.google.com/macros/s/AKfycbyMORYyqEevb_fN_G4wToVhcEbuVYUUp4xUs3wl7w_xXlAxp3mZmiiyDi8gCfzVXHpB8Q/exec', {
+        fetch('https://script.google.com/macros/s/AKfycbx9RjSe9zmRAP_Rbe4Ue98zqsUtfG-IaLBFJg7cksbRzDFM-aAYu7CIF-HuNQlbepKv/exec', {
             method: "POST",
-            body: formData
+            body: formData,
+            mode: 'no-cors'
+        })
+        .then(() => {
+            console.log("Message sent successfully!");
+            typewriter('Lời nhắn nhủ của bạn đã được ghi nhận!');
+
+        })
+        .catch((error) => {
+            console.error("Error:", error);
         });
     }
+    
 
-    function typewriter(text, speed = 50) {
+    function typewriter(text, speed = 25) {
         let current_text = '';
         let j = 0;
         let typing_animation = setInterval(() => {
