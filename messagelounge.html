@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Message Lounge</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to right, #6a11cb, #2575fc);
+      color: white;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      margin-top: 50px;
+      font-size: 3rem;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    .message-container {
+      width: 80%;
+      margin: 20px auto;
+      max-height: 400px;
+      overflow-y: auto;
+      border-radius: 10px;
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+    }
+
+    .message {
+      background-color: rgba(0, 0, 0, 0.3);
+      margin: 10px;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: left;
+    }
+
+    .message .timestamp {
+      font-size: 0.8rem;
+      color: lightgray;
+      margin-top: 5px;
+      display: block;
+    }
+
+    .message-form {
+      margin-top: 20px;
+    }
+
+    input[type="text"] {
+      width: 60%;
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 5px;
+      border: none;
+      outline: none;
+    }
+
+    button {
+      background-color: #ff9800;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #ff5722;
+    }
+
+    #statusMessage {
+      margin-top: 10px;
+      color: lightgreen;
+    }
+  </style>
+</head>
+<body>
+  <h1>Anonymous chat lounge</h1>
+
+  <div class="message-container" id="messageContainer">
+    <!-- Messages will appear here -->
+  </div>
+
+  <form class="message-form" id="messageForm">
+    <input type="text" id="messageInput" placeholder="Type your message here..." required>
+    <button type="submit">Send</button>
+  </form>
+
+  <p id="statusMessage"></p>
+
+  <script>
+    const form = document.getElementById('messageForm');
+    const messageInput = document.getElementById('messageInput');
+    const messageContainer = document.getElementById('messageContainer');
+    const statusMessage = document.getElementById('statusMessage');
+
+    // Function to send a message to Google Sheets
+    function sendMessageToSheet(event) {
+      event.preventDefault();
+
+      const message = messageInput.value.trim();
+
+      if (message === '') {
+        statusMessage.textContent = 'Message cannot be empty!';
+        return;
+      }
+
+      // Use FormData API to prepare data
+      const formData = new FormData();
+      formData.append('message', message);
+
+      fetch('https://script.google.com/macros/s/AKfycbyD5k4d94hwEhLS1J88w9o_IYFXef6VGr2olY8VJbcrrH0hqw6i-RDjGukDyEHyTXMG/exec', {  // Replace with your web app URL
+        method: 'POST',
+        mode:'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: message })
+      })
+      .then(response => response.text())
+      .then(data => {
+        console.log(data);
+
+        // Show success message and clear the input
+        statusMessage.textContent = 'Message sent successfully!';
+        setTimeout(statusMessage.textContent = '',2000);
+        fetchMessages();  // Refresh the message list
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        statusMessage.textContent = 'Error sending message!';
+      });
+    }
+
+    // Function to fetch and display messages from Google Sheets
+    function fetchMessages() {
+      fetch('https://script.google.com/macros/s/AKfycbyD5k4d94hwEhLS1J88w9o_IYFXef6VGr2olY8VJbcrrH0hqw6i-RDjGukDyEHyTXMG/exec')  // Replace with your web app URL
+      .then(response => response.json())
+      .then(messages => {
+        // Clear the message container
+        messageContainer.innerHTML = '';
+
+        // Display each message with its timestamp
+        messages.forEach(data => {
+          const messageDiv = document.createElement('div');
+          messageDiv.className = 'message';
+          messageDiv.textContent = data.message;
+
+          const timestampDiv = document.createElement('span');
+          timestampDiv.className = 'timestamp';
+
+          // Convert timestamp to a readable format
+          const date = new Date(data.timestamp);
+          const formattedDate = date.toLocaleString();  // Format date/time for readability
+          timestampDiv.textContent = `${formattedDate}`;
+
+          messageDiv.appendChild(timestampDiv);
+          messageContainer.appendChild(messageDiv);
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching messages:', error);
+      });
+    }
+
+    // Fetch messages every 5 seconds
+    setInterval(fetchMessages, 2000);
+
+    // Fetch messages immediately when the page loads
+    window.onload = fetchMessages;
+
+    // Add event listener to the form
+    form.addEventListener('submit', sendMessageToSheet);
+  </script>
+</body>
+</html>
